@@ -146,3 +146,5 @@ src/main/resources/web-src/node_modules/
 src/main/resources/web-src/node/
 
 src/main/resources/config/application-oauth.yml
+
+classes/
