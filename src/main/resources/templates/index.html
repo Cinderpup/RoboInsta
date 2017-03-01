@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html
+    lang="en"
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:th="http://www.thymeleaf.org"
+    xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorator="decorator/decorator"
+>
+
+<div layout:fragment="main-content">
+    <div class="col-md- col-sm-12 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2>Applications</h2>
+                <ul class="nav navbar-right panel_toolbox">
+                    <a th:href="@{/applications/add}" class="btn btn-success">add application</a>
+                </ul>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="application, iterationStatus : ${applications}">
+                        <th scope="row" th:text="${user.id}">1</th>
+                        <td th:text="${application.name}">AppName</td>
+                        <td th:text="${application.description}">Otto</td>
+                        <td>
+                            <a th:href="@{'/applications/' + ${application.id} + '/edit'}"
+                               class="btn btn-sm btn-success">edit</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>
