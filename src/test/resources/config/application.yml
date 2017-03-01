@@ -1,0 +1,23 @@
+spring:
+    application:
+        name: RoboInsta
+    jackson:
+        serialization.write_dates_as_timestamps: false
+    mail:
+        host: localhost
+    mvc:
+        favicon:
+            enabled: false
+    thymeleaf:
+        mode: XHTML
+
+liquibase:
+    contexts: test
+
+security:
+    basic:
+        enabled: false
+
+server:
+    port: 10344
+    address: localhost
