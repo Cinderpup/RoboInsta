@@ -1,4 +1,4 @@
-Robo-Insta
+Robo-Insta [![Build Status](https://travis-ci.org/Cinderpup/RoboInsta.svg?branch=master)](https://travis-ci.org/Cinderpup/RoboInsta)
 ===
 
 ##Running Locally
