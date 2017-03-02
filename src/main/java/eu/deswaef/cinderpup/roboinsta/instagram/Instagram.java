@@ -1,25 +1,28 @@
-package eu.deswaef.cinderpup.roboinsta.instagram.io;
+package eu.deswaef.cinderpup.roboinsta.instagram;
 
-import eu.deswaef.cinderpup.roboinsta.instagram.InstagramConstants;
-import eu.deswaef.cinderpup.roboinsta.instagram.InstagramHashing;
+import eu.deswaef.cinderpup.roboinsta.instagram.io.InstagramRequest;
 import eu.deswaef.cinderpup.roboinsta.instagram.io.internal.InstagramFetchHeadersRequest;
 import eu.deswaef.cinderpup.roboinsta.instagram.io.login.InstagramLoginPayload;
 import eu.deswaef.cinderpup.roboinsta.instagram.io.login.InstagramLoginRequest;
 import eu.deswaef.cinderpup.roboinsta.instagram.io.login.InstagramLoginResult;
+import eu.deswaef.cinderpup.roboinsta.instagram.io.login.LoginOperations;
+import eu.deswaef.cinderpup.roboinsta.instagram.utils.InstagramHashing;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.params.ClientPNames;
-import org.apache.http.client.params.CookiePolicy;
+import org.apache.http.client.CookieStore;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.CookieSpecs;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 
-public class Instagram4j {
+public class Instagram {
     protected String deviceId;
 
     protected String uuid;
@@ -38,16 +41,22 @@ public class Instagram4j {
 
     protected boolean debug;
 
-    protected DefaultHttpClient client;
+    protected HttpClient client;
+
+    protected CookieStore cookieStore;
 
     /**
      * @param username Username
      * @param password Password
      */
-    public Instagram4j(String username, String password) {
+    public Instagram(String username, String password) {
         super();
         this.username = username;
         this.password = password;
+    }
+
+    public LoginOperations login(final String username, final String password) {
+        return new LoginOperations(this.cookieStore, this);
     }
 
     /**
@@ -66,13 +75,22 @@ public class Instagram4j {
         this.deviceId = InstagramHashing.generateDeviceId(this.username, this.password);
         this.uuid = randomUUID();
 
-        this.client = new DefaultHttpClient();
-        this.client.getParams().setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.BROWSER_COMPATIBILITY);
-        this.client.setCookieStore(new BasicCookieStore());
+        this.cookieStore = new BasicCookieStore();
+        final RequestConfig requestConfig = RequestConfig.custom()
+            .setCookieSpec(CookieSpecs.DEFAULT)
+            .setAuthenticationEnabled(true)
+            .setRedirectsEnabled(true)
+            .build();
+
+        this.client = HttpClientBuilder.create()
+            .setDefaultCookieStore(cookieStore)
+            .setDefaultRequestConfig(requestConfig)
+            .build();
+        // this.client.getParams().setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.BROWSER_COMPATIBILITY);
 
     }
 
-    private String randomUUID() {
+    public String randomUUID() {
         return UUID.randomUUID().toString().replaceAll("-", "");
     }
 
@@ -111,52 +129,36 @@ public class Instagram4j {
         return loginResult;
     }
 
-    /**
-     * @return
-     * @throws ClientProtocolException
-     * @throws IOException
-     */
     public String getOrFetchCsrf() throws ClientProtocolException, IOException {
         Optional<Cookie> checkCookie = getCsrfCookie();
         if (!checkCookie.isPresent()) {
             sendRequest(new InstagramFetchHeadersRequest());
             checkCookie = getCsrfCookie();
         }
-        String csrfToken = checkCookie.get().getValue();
-        return csrfToken;
+        return checkCookie.get().getValue();
     }
 
     public Optional<Cookie> getCsrfCookie() {
-        return client.getCookieStore().getCookies().stream().filter(cookie -> cookie.getName().equalsIgnoreCase("csrftoken")).findFirst();
+        return cookieStore.getCookies()
+            .stream()
+            .filter(cookie -> cookie.getName().equalsIgnoreCase("csrftoken"))
+            .findFirst();
     }
 
-    /**
-     * Send request to endpoint
-     *
-     * @param request Request object
-     * @return success flag
-     * @throws IOException
-     * @throws ClientProtocolException
-     */
     public <T> T sendRequest(InstagramRequest<T> request) throws ClientProtocolException, IOException {
-
-
         if (!this.isLoggedIn
             && request.requiresLogin()) {
             throw new IllegalStateException("Need to login first!");
         }
-
         request.setApi(this);
-        T response = request.execute();
-
-        return response;
+        return request.execute();
     }
 
     public String getDeviceId() {
         return deviceId;
     }
 
-    public Instagram4j setDeviceId(String deviceId) {
+    public Instagram setDeviceId(String deviceId) {
         this.deviceId = deviceId;
         return this;
     }
@@ -165,7 +167,7 @@ public class Instagram4j {
         return uuid;
     }
 
-    public Instagram4j setUuid(String uuid) {
+    public Instagram setUuid(String uuid) {
         this.uuid = uuid;
         return this;
     }
@@ -174,7 +176,7 @@ public class Instagram4j {
         return username;
     }
 
-    public Instagram4j setUsername(String username) {
+    public Instagram setUsername(String username) {
         this.username = username;
         return this;
     }
@@ -183,7 +185,7 @@ public class Instagram4j {
         return password;
     }
 
-    public Instagram4j setPassword(String password) {
+    public Instagram setPassword(String password) {
         this.password = password;
         return this;
     }
@@ -192,7 +194,7 @@ public class Instagram4j {
         return userId;
     }
 
-    public Instagram4j setUserId(long userId) {
+    public Instagram setUserId(long userId) {
         this.userId = userId;
         return this;
     }
@@ -201,7 +203,7 @@ public class Instagram4j {
         return rankToken;
     }
 
-    public Instagram4j setRankToken(String rankToken) {
+    public Instagram setRankToken(String rankToken) {
         this.rankToken = rankToken;
         return this;
     }
@@ -210,7 +212,7 @@ public class Instagram4j {
         return isLoggedIn;
     }
 
-    public Instagram4j setLoggedIn(boolean loggedIn) {
+    public Instagram setLoggedIn(boolean loggedIn) {
         isLoggedIn = loggedIn;
         return this;
     }
@@ -219,7 +221,7 @@ public class Instagram4j {
         return lastResponse;
     }
 
-    public Instagram4j setLastResponse(HttpResponse lastResponse) {
+    public Instagram setLastResponse(HttpResponse lastResponse) {
         this.lastResponse = lastResponse;
         return this;
     }
@@ -228,16 +230,16 @@ public class Instagram4j {
         return debug;
     }
 
-    public Instagram4j setDebug(boolean debug) {
+    public Instagram setDebug(boolean debug) {
         this.debug = debug;
         return this;
     }
 
-    public DefaultHttpClient getClient() {
+    public HttpClient getClient() {
         return client;
     }
 
-    public Instagram4j setClient(DefaultHttpClient client) {
+    public Instagram setClient(HttpClient client) {
         this.client = client;
         return this;
     }

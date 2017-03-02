@@ -1,6 +1,7 @@
 package eu.deswaef.cinderpup.roboinsta.instagram.io;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import eu.deswaef.cinderpup.roboinsta.instagram.Instagram;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.ClientProtocolException;
 
@@ -9,7 +10,7 @@ import java.io.InputStream;
 
 public abstract class InstagramRequest<T> {
 
-    protected Instagram4j api;
+    protected Instagram api;
 
     public abstract String getUrl();
 
@@ -43,11 +44,11 @@ public abstract class InstagramRequest<T> {
         }
     }
 
-    public Instagram4j getApi() {
+    public Instagram getApi() {
         return api;
     }
 
-    public InstagramRequest setApi(Instagram4j api) {
+    public InstagramRequest setApi(Instagram api) {
         this.api = api;
         return this;
     }

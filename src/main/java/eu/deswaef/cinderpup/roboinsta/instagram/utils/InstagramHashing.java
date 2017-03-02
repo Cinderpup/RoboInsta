@@ -1,4 +1,4 @@
-package eu.deswaef.cinderpup.roboinsta.instagram;
+package eu.deswaef.cinderpup.roboinsta.instagram.utils;
 
 import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Autowired;

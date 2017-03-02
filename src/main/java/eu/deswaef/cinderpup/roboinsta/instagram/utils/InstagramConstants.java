@@ -1,4 +1,4 @@
-package eu.deswaef.cinderpup.roboinsta.instagram;
+package eu.deswaef.cinderpup.roboinsta.instagram.utils;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;

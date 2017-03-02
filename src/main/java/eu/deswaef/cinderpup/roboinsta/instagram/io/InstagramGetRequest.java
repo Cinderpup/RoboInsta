@@ -1,6 +1,6 @@
 package eu.deswaef.cinderpup.roboinsta.instagram.io;
 
-import eu.deswaef.cinderpup.roboinsta.instagram.InstagramConstants;
+import eu.deswaef.cinderpup.roboinsta.instagram.utils.InstagramConstants;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
