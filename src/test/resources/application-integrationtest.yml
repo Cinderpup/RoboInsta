@@ -1,0 +1,11 @@
+roboinsta:
+    credentials:
+        username: ${roboinsta_credentials_username}
+        password: ${roboinsta_credentials_password}
+
+amazon:
+    dynamodb:
+        endpoint: http://localhost:8000/
+    aws:
+        accesskey: test
+        secretkey: test

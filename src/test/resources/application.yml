@@ -21,8 +21,3 @@ security:
 server:
     port: 10344
     address: localhost
-
-roboinsta:
-    credentials:
-        username: myAccount
-        password:

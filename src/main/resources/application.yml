@@ -26,16 +26,6 @@ server:
             http-only: true
     port: 8080
 
-# ===================================================================
-# Application specific properties
-# Add your own application properties here, see the ApplicationProperties class
-# to have type-safe configuration, like in the JHipsterProperties above
-#
-# More documentation is available at:
-# https://jhipster.github.io/common-application-properties/
-# ===================================================================
-
-
 amazon:
     dynamodb:
         endpoint: http://localhost:8000/
@@ -49,3 +39,8 @@ debug: true
 logging:
   level:
     org.springframework.security: DEBUG
+
+roboinsta:
+    credentials:
+        username: test
+        password: test
