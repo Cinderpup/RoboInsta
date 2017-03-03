@@ -1,5 +1,6 @@
 package eu.deswaef.cinderpup.roboinsta.instagram.io;
 
+import eu.deswaef.cinderpup.roboinsta.instagram.context.InstagramContextHolder;
 import eu.deswaef.cinderpup.roboinsta.instagram.utils.InstagramConstants;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -25,8 +26,7 @@ public abstract class InstagramGetRequest<T> extends InstagramRequest<T> {
         get.addHeader("Accept-Language", "en-US");
         get.addHeader("User-Agent", InstagramConstants.userAgent);
 
-        HttpResponse response = api.getClient().execute(get);
-        api.setLastResponse(response);
+        HttpResponse response = InstagramContextHolder.getContext().getHttpClient().execute(get);
 
         int resultCode = response.getStatusLine().getStatusCode();
         String content = EntityUtils.toString(response.getEntity());

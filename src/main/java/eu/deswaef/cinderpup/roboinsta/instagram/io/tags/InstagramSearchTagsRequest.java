@@ -1,5 +1,6 @@
 package eu.deswaef.cinderpup.roboinsta.instagram.io.tags;
 
+import eu.deswaef.cinderpup.roboinsta.instagram.context.InstagramContextHolder;
 import eu.deswaef.cinderpup.roboinsta.instagram.io.InstagramGetRequest;
 
 public class InstagramSearchTagsRequest extends InstagramGetRequest<InstagramSearchTagsResult> {
@@ -12,7 +13,7 @@ public class InstagramSearchTagsRequest extends InstagramGetRequest<InstagramSea
 
     @Override
     public String getUrl() {
-        return "tags/search/?is_typeahead=true&q=" + query + "&rank_token=" + api.getRankToken();
+        return "tags/search/?is_typeahead=true&q=" + query + "&rank_token=" + InstagramContextHolder.getContext().getRankToken();
     }
 
     @Override

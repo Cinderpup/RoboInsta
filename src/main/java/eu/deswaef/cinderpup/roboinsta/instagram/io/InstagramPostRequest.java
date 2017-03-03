@@ -1,5 +1,6 @@
 package eu.deswaef.cinderpup.roboinsta.instagram.io;
 
+import eu.deswaef.cinderpup.roboinsta.instagram.context.InstagramContextHolder;
 import eu.deswaef.cinderpup.roboinsta.instagram.utils.InstagramConstants;
 import eu.deswaef.cinderpup.roboinsta.instagram.utils.InstagramHashing;
 import org.apache.http.HttpResponse;
@@ -30,8 +31,7 @@ public abstract class InstagramPostRequest<T> extends InstagramRequest<T> {
         String parsedData = InstagramHashing.generateSignature(getPayload());
         post.setEntity(new StringEntity(parsedData));
 
-        HttpResponse response = api.getClient().execute(post);
-        api.setLastResponse(response);
+        HttpResponse response = InstagramContextHolder.getContext().getHttpClient().execute(post);
 
         int resultCode = response.getStatusLine().getStatusCode();
         String content = EntityUtils.toString(response.getEntity());

@@ -1,10 +1,9 @@
 package eu.deswaef.cinderpup.roboinsta.instagram.io.login;
 
-import eu.deswaef.cinderpup.roboinsta.instagram.Instagram;
 import eu.deswaef.cinderpup.roboinsta.instagram.context.InstagramAuthentication;
 import eu.deswaef.cinderpup.roboinsta.instagram.context.InstagramContextHolder;
+import eu.deswaef.cinderpup.roboinsta.instagram.io.InstagramOperations;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.CookieStore;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -12,19 +11,16 @@ import java.util.List;
 import java.util.function.Consumer;
 
 
-public class LoginOperations {
+public class LoginOperations extends InstagramOperations {
 
     private String username;
     private String password;
-    private CookieStore cookieStore;
     private List<Consumer<InstagramLoginResult>> resultConsumers;
     private List<Consumer<Exception>> exceptionConsumers;
-    private Instagram instagram;
 
-    public LoginOperations(final CookieStore cookieStore, final Instagram instagram) {
-        this.cookieStore = cookieStore;
+    public LoginOperations() {
         this.resultConsumers = new LinkedList<>();
-        this.instagram = instagram;
+        this.exceptionConsumers = new LinkedList<>();
     }
 
     public LoginOperations withCredentials(final String username, final String password) {
@@ -44,18 +40,22 @@ public class LoginOperations {
     }
 
     public void execute() {
-        if (StringUtils.isEmpty(this.username)) {
-            throw new IllegalArgumentException("Username is mandatory.");
-        }
-
-        if (StringUtils.isEmpty(this.password)) {
-            throw new IllegalArgumentException("Password is mandatory.");
-        }
         try {
+            if (StringUtils.isEmpty(this.username)) {
+                throw new IllegalArgumentException("Username is mandatory.");
+            }
+
+            if (StringUtils.isEmpty(this.password)) {
+                throw new IllegalArgumentException("Password is mandatory.");
+            }
             final InstagramLoginPayload loginRequest = constructLogin();
-            final InstagramLoginResult loginResult = instagram.sendRequest(new InstagramLoginRequest(loginRequest));
-            populateAuthentication();
-            this.resultConsumers.forEach(consumer -> consumer.accept(loginResult));
+            final InstagramLoginResult loginResult = sendRequest(new InstagramLoginRequest(loginRequest));
+            if (loginResult.getStatus().equalsIgnoreCase("ok")) {
+                populateAuthentication();
+                this.resultConsumers.forEach(consumer -> consumer.accept(loginResult));
+            } else {
+                throw new RuntimeException("Unable to login, status was " + loginResult.getStatus());
+            }
         } catch (Exception ex) {
             this.exceptionConsumers.forEach(consumer -> consumer.accept(ex));
         }
@@ -64,16 +64,16 @@ public class LoginOperations {
     private InstagramLoginPayload constructLogin() throws IOException {
         return new InstagramLoginPayload().setUsername(username)
             .setPassword(password)
-            .setGuid(instagram.getUuid())
-            .setDevice_id(instagram.getDeviceId())
-            .setPhone_id(instagram.randomUUID())
+            .setGuid(InstagramContextHolder.getContext().getDevice().getGuid())
+            .setDevice_id(InstagramContextHolder.getContext().getDevice().getDeviceId())
+            .setPhone_id(InstagramContextHolder.getContext().getDevice().getPhoneId())
             .setLogin_attempt_account(0)
-            .set_csrftoken(instagram.getOrFetchCsrf());
+            .set_csrftoken(getOrFetchCsrf());
     }
 
     private void populateAuthentication() {
         InstagramContextHolder.getContext().setAuthentication(
-            new InstagramAuthentication().setCookieStore(this.cookieStore)
+            new InstagramAuthentication()
                 .setPassword(this.password)
                 .setUsername(this.username)
         );

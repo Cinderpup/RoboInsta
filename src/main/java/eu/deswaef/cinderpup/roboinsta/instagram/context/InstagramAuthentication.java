@@ -5,7 +5,7 @@ import org.apache.http.client.CookieStore;
 public class InstagramAuthentication {
     private String username;
     private String password;
-    private CookieStore cookieStore;
+    private String userId;
 
     public String getUsername() {
         return username;
@@ -25,12 +25,12 @@ public class InstagramAuthentication {
         return this;
     }
 
-    public CookieStore getCookieStore() {
-        return cookieStore;
+    public String getUserId() {
+        return userId;
     }
 
-    public InstagramAuthentication setCookieStore(CookieStore cookieStore) {
-        this.cookieStore = cookieStore;
+    public InstagramAuthentication setUserId(String userId) {
+        this.userId = userId;
         return this;
     }
 }
